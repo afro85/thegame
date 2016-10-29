@@ -3,6 +3,7 @@
 #include <iostream>
 #include <algorithm>
 #include <thread>
+#include <atomic>
 
 #include "MsgQueue.hh"
 
@@ -22,15 +23,25 @@ public:
         iWorkQueue.enqueue(aWork);
     }
 
+    void stop()
+    {
+        iStop = true;
+        iWorkQueue.release();
+        std::for_each(iPool.begin(), iPool.end(), [](auto& lIt){lIt.join();});
+    }
+
 private:
     const std::function<void(void)> iThreadBody = [this](){
-        while (1)
+        while (!iStop)
         {
             auto lWork = this->iWorkQueue.dequeue();
+            if (this->iWorkQueue.isReleased())
+                break;
             lWork();
         }
     };
 
     std::vector<std::thread> iPool;
     MsgQueue<Work> iWorkQueue;
+    std::atomic<bool> iStop;
 };

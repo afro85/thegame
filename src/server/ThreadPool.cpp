@@ -1,6 +1,6 @@
 #include <server/ThreadPool.hh>
 
-ThreadPool::ThreadPool(size_t aThreadsNumber)
+ThreadPool::ThreadPool(size_t aThreadsNumber) : iStop(false)
 {
     iPool.resize(aThreadsNumber);
     std::generate(iPool.begin(), iPool.end(),

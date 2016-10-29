@@ -11,7 +11,7 @@ public:
     using Ptr = std::shared_ptr<MsgQueue>;
 
 public:
-    explicit MsgQueue() {}
+    explicit MsgQueue() : iRelease(false) {}
     ~MsgQueue() {}
 
     auto size()
@@ -21,11 +21,18 @@ public:
     }
     void enqueue(const T& aItem);
     T dequeue(void);
+    void release() {
+        iRelease = true;
+        iNotEmptyCV.notify_all();
+    }
+    bool isReleased() { return iRelease; }
+
 
 private:
     std::mutex iAccessMutex;
     std::condition_variable iNotEmptyCV;
     std::queue<T> iQueue;
+    std::atomic<bool> iRelease;
 };
 
 template <typename T>
@@ -42,7 +49,10 @@ T MsgQueue<T>::dequeue(void)
     std::unique_lock<std::mutex> lLock{iAccessMutex};
 
     if (iQueue.empty())
-        iNotEmptyCV.wait(lLock, [this](){ return !(this->iQueue.empty()); });
+        iNotEmptyCV.wait(lLock, [&](){ return !(iQueue.empty()) || iRelease; });
+    if (iRelease)
+        return T();
+
 
     T lItem = iQueue.front();
     iQueue.pop();
