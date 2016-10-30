@@ -16,13 +16,17 @@ public:
 public:
     explicit ThreadPool(size_t aThreadsNumber);
     ThreadPool(const ThreadPool& ) = delete;
-    virtual ~ThreadPool() {}
+    virtual ~ThreadPool()
+    {
+        stop();
+    }
 
     void delegate(const Work& aWork)
     {
         iWorkQueue.enqueue(aWork);
     }
 
+private:
     void stop()
     {
         iStop = true;
