@@ -7,6 +7,9 @@ set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -Werror -03")
 set (SERVER_SOURCES
     Main.cpp
     ThreadPool.cpp
+    Network/TcpServer.cpp
+    Network/Acceptor.cpp
+    Network/Socket.cpp
 )
 add_executable (thegame-server ${SERVER_SOURCES})
 
