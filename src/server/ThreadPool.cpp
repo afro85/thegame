@@ -1,4 +1,4 @@
-#include <server/ThreadPool.hh>
+#include <server/ThreadPool.h>
 
 ThreadPool::ThreadPool(size_t aThreadsNumber) : iStop(false)
 {

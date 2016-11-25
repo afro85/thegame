@@ -5,7 +5,7 @@
 #include <thread>
 #include <atomic>
 
-#include "MsgQueue.hh"
+#include <server/MsgQueue.h>
 
 class ThreadPool
 {
