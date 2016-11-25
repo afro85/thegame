@@ -52,8 +52,10 @@ private:
     explicit TcpServer();
 
     void close() noexcept {
-        if (mEpollFd >= 0)
+        if (mEpollFd >= 0) {
             ::close(mEpollFd);
+            mEpollFd = -1;
+        }
     }
     void listen();
     void stopListen() noexcept { mStopListen = true; }
