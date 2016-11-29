@@ -1,6 +1,6 @@
 #pragma once
 
-#include <server/Network/Socket.h>
+#include <Common/Socket.h>
 
 #include <memory>
 
@@ -15,7 +15,7 @@ public:
 
 private:
     static const uint16_t kDefaultPort = 4004;
-    Socket mSocket;
+    Common::Socket mSocket;
 };
 
 }

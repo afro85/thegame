@@ -1,11 +1,11 @@
-#include <server/Network/Socket.h>
+#include <Common/Socket.h>
 #include <server/Log.h>
 
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <cstring>
 
-Network::Socket::Socket() {
+Common::Socket::Socket() {
     mFd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (mFd < 0) {
         throw std::system_error(std::error_code(errno, std::generic_category()),
@@ -14,7 +14,7 @@ Network::Socket::Socket() {
     Log::d() << "Socket created fd=" << mFd << "\n";
 }
 
-void Network::Socket::bind(uint16_t aPort) {
+void Common::Socket::bind(uint16_t aPort) {
     sockaddr_in lAddr;
     lAddr.sin_family = AF_INET;
     lAddr.sin_addr.s_addr = INADDR_ANY;
@@ -27,14 +27,14 @@ void Network::Socket::bind(uint16_t aPort) {
     }
 }
 
-void Network::Socket::listen(int aMaxConnection){
+void Common::Socket::listen(int aMaxConnection){
     if (::listen(mFd, aMaxConnection) < 0) {
         throw std::system_error(std::error_code(errno, std::generic_category()),
             "aMaxConnection()");
     }
 }
 
-void Network::Socket::setNonBlocking() {
+void Common::Socket::setNonBlocking() {
     auto lFlags = fcntl(mFd, F_GETFL, 0);
     if (lFlags < 0) {
         throw std::system_error(std::error_code(errno, std::generic_category()),

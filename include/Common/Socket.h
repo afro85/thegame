@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-namespace Network {
+namespace Common {
 
 class Socket {
 public:

@@ -1,6 +1,6 @@
 #include <server/Log.h>
 #include <server/ThreadPool.h>
-#include <server/Network/TcpServer.h>
+#include <Common/EventDispatcher.h>
 
 #include <iostream>
 
@@ -18,7 +18,7 @@ int main()
     //auto lDispatcher = Network::EventDispatcher::getInstance();
     //lDispatcher->run();
 
-    auto& lServer = Network::TcpServer::getInstance();
+    auto& lServer = Common::EventDispatcher::getInstance();
     try
     {
         lServer.run();

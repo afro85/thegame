@@ -1,10 +1,10 @@
 #include <server/Log.h>
-#include <server/Network/TcpServer.h>
+#include <Common/EventDispatcher.h>
 #include <server/Network/Acceptor.h>
 
 #include <algorithm>
 
-Network::TcpServer::TcpServer() : mStopListen(false) {
+Common::EventDispatcher::EventDispatcher() : mStopListen(false) {
     mEpollFd = epoll_create(1);
     if (mEpollFd < 0) {
         throw std::system_error(std::error_code(errno, std::generic_category()),
@@ -13,23 +13,20 @@ Network::TcpServer::TcpServer() : mStopListen(false) {
     Log::d() << "Created epoll fd=" << std::to_string(mEpollFd) << "\n";
 }
 
-Network::TcpServer::~TcpServer() {
+Common::EventDispatcher::~EventDispatcher() {
     stopListen();
     mListenThread.join();
     close();
 }
 
-void Network::TcpServer::run() {
+void Common::EventDispatcher::run() {
     if (mListenThread.get_id() != std::thread::id())
         std::logic_error("There is one listen thread existed");
 
-    mListenThread = std::thread(&Network::TcpServer::listen, this);
+    mListenThread = std::thread(&Common::EventDispatcher::listen, this);
 }
 
-void Network::TcpServer::listen() {
-    // Create an Acceptor instance
-    Acceptor lAcceptor{};
-
+void Common::EventDispatcher::listen() {
     // Waiting for events
     epoll_event lRcvEvents[kMaxEvents] = {0};
     while(!mStopListen) {
@@ -81,7 +78,7 @@ void Network::TcpServer::listen() {
     }
 }
 
-void Network::TcpServer::registerHandler(Socket::Fd aFd, Event aEvent,
+void Common::EventDispatcher::registerHandler(Socket::Fd aFd, Event aEvent,
         const Handler& aHandler) {
     // Get the current handlers set of provided fd or insert the new one
     auto lRegFd = mHandlers.insert(std::make_pair(aFd, Handlers()));
@@ -117,7 +114,7 @@ void Network::TcpServer::registerHandler(Socket::Fd aFd, Event aEvent,
     }
 }
 
-void Network::TcpServer::unregisterHandler(Socket::Fd aFd, Event aEvent) {
+void Common::EventDispatcher::unregisterHandler(Socket::Fd aFd, Event aEvent) {
     // Find provided Fd handlers' map
     auto lRegFd = mHandlers.find(aFd);
     if (lRegFd == mHandlers.end()) {
@@ -136,7 +133,7 @@ void Network::TcpServer::unregisterHandler(Socket::Fd aFd, Event aEvent) {
     // Check if the provided event is already registered
     if (!(lEventData.events & static_cast<uint32_t>(aEvent))) {
         throw std::runtime_error("There is no such event (" +
-                std::to_string(static_cast<uint32_t>(aEvent)) + 
+                std::to_string(static_cast<uint32_t>(aEvent)) +
                 ") registered for socket(fd=" + std::to_string(aFd));
     }
 
@@ -144,7 +141,7 @@ void Network::TcpServer::unregisterHandler(Socket::Fd aFd, Event aEvent) {
     lEventData.events &= !(static_cast<uint32_t>(aEvent));
 
     // Unregister event or entire fd in case of default events mask
-    auto lOperation = 
+    auto lOperation =
         (lEventData.events != kDefaultEvents) ? EPOLL_CTL_MOD : EPOLL_CTL_DEL;
     if (epoll_ctl(mEpollFd, lOperation, aFd, &lEventData) < 0) {
         throw std::system_error(std::error_code(errno, std::generic_category()),

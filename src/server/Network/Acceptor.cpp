@@ -1,6 +1,6 @@
 #include <server/Log.h>
 #include <server/Network/Acceptor.h>
-#include <server/Network/TcpServer.h>
+#include <Common/EventDispatcher.h>
 
 #include <exception>
 
@@ -14,9 +14,10 @@ Network::Acceptor::Acceptor(uint16_t aPort)
     mSocket.setNonBlocking();
 
     // Register socket on CAN_READ event
-    TcpServer::getInstance().registerHandler(mSocket.getFd(),
-            TcpServer::Event::kCanRead,
-            TcpServer::Handler(std::bind(&Acceptor::onCanRead, this)));
+    using namespace Common;
+    EventDispatcher::getInstance().registerHandler(mSocket.getFd(),
+            EventDispatcher::Event::kCanRead,
+            EventDispatcher::Handler(std::bind(&Acceptor::onCanRead, this)));
 }
 
 void Network::Acceptor::onCanRead()

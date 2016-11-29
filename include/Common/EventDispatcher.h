@@ -1,6 +1,6 @@
 #pragma once
 
-#include <server/Network/Socket.h>
+#include <Common/Socket.h>
 
 #include <thread>
 #include <atomic>
@@ -11,12 +11,12 @@
 #include <unistd.h>
 #include <sys/epoll.h>
 
-namespace Network {
+namespace Common {
 
-class TcpServer {
+class EventDispatcher {
 
 public:
-    using Ptr = std::shared_ptr<TcpServer>;
+    using Ptr = std::shared_ptr<EventDispatcher>;
     // Definition types of events those handler can be registered for
     enum class Event : uint32_t {
         kCanRead = EPOLLIN,
@@ -29,7 +29,7 @@ public:
 private:
     // Hash function for Event enum.
     struct hashEvent {
-        size_t operator() (const Network::TcpServer::Event& aE) const {
+        size_t operator() (const Common::EventDispatcher::Event& aE) const {
             return std::hash<int>()(static_cast<int>(aE));
         }
     };
@@ -37,19 +37,19 @@ private:
     using Handlers = std::unordered_map<Event, Handler, hashEvent>;
 
 public:
-    static TcpServer& getInstance() {
-        static TcpServer lObj{};
+    static EventDispatcher& getInstance() {
+        static EventDispatcher lObj{};
         return lObj;
     }
 
-    virtual ~TcpServer();
+    virtual ~EventDispatcher();
 
     void run();
     void registerHandler(Socket::Fd aFd, Event aEvent, const Handler& handler);
     void unregisterHandler(Socket::Fd aFd, Event aEvent);
 
 private:
-    explicit TcpServer();
+    explicit EventDispatcher();
 
     void close() noexcept {
         if (mEpollFd >= 0) {
