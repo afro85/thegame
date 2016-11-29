@@ -7,6 +7,7 @@ set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -Werror -03")
 set (COMMON_SOURCES
     EventDispatcher.cpp
     Socket.cpp
+    ThreadPool.cpp
 )
 
 add_library (common ${COMMON_SOURCES})

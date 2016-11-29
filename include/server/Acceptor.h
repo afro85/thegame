@@ -4,8 +4,6 @@
 
 #include <memory>
 
-namespace Network {
-
 class Acceptor {
 public:
     explicit Acceptor(uint16_t aPort = kDefaultPort);
@@ -17,5 +15,3 @@ private:
     static const uint16_t kDefaultPort = 4004;
     Common::Socket mSocket;
 };
-
-}

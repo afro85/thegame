@@ -5,7 +5,9 @@
 #include <thread>
 #include <atomic>
 
-#include <server/MsgQueue.h>
+#include <Common/MsgQueue.h>
+
+namespace Common {
 
 class ThreadPool
 {
@@ -49,3 +51,5 @@ private:
     MsgQueue<Work> iWorkQueue;
     std::atomic<bool> iStop;
 };
+
+}

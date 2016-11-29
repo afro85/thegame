@@ -1,10 +1,10 @@
-#include <server/Log.h>
-#include <server/Network/Acceptor.h>
+#include <Common/Log.h>
 #include <Common/EventDispatcher.h>
+#include <server/Acceptor.h>
 
 #include <exception>
 
-Network::Acceptor::Acceptor(uint16_t aPort)
+Acceptor::Acceptor(uint16_t aPort)
 {
     // Set appropriate socket properites in order to be server socket
     mSocket.setOption<int>(SO_REUSEADDR, 1);
@@ -20,7 +20,7 @@ Network::Acceptor::Acceptor(uint16_t aPort)
             EventDispatcher::Handler(std::bind(&Acceptor::onCanRead, this)));
 }
 
-void Network::Acceptor::onCanRead()
+void Acceptor::onCanRead()
 {
     Log::d() << __func__ << "\n";
 }

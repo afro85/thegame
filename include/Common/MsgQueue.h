@@ -4,6 +4,8 @@
 #include <mutex>
 #include <condition_variable>
 
+namespace Common {
+
 template <typename T>
 class MsgQueue
 {
@@ -57,4 +59,6 @@ T MsgQueue<T>::dequeue(void)
     T lItem = iQueue.front();
     iQueue.pop();
     return lItem;
+}
+
 }

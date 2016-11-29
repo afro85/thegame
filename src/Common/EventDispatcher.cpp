@@ -1,6 +1,6 @@
-#include <server/Log.h>
+#include <Common/Log.h>
 #include <Common/EventDispatcher.h>
-#include <server/Network/Acceptor.h>
+#include <server/Acceptor.h>
 
 #include <algorithm>
 

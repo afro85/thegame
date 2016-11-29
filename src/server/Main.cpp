@@ -1,5 +1,5 @@
-#include <server/Log.h>
-#include <server/ThreadPool.h>
+#include <Common/Log.h>
+#include <Common/ThreadPool.h>
 #include <Common/EventDispatcher.h>
 
 #include <iostream>
@@ -11,7 +11,7 @@ int main()
 {
     std::cout << "The Game has just begun\n";
 
-    ThreadPool lThreadPool(5);
+    Common::ThreadPool lThreadPool(5);
 
     //Network::ConnectionManager::getInstance().run();
 
