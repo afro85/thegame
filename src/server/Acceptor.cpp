@@ -4,6 +4,8 @@
 
 #include <exception>
 
+using Common::Log;
+
 Acceptor::Acceptor(uint16_t aPort)
 {
     // Set appropriate socket properites in order to be server socket

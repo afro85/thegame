@@ -1,11 +1,11 @@
 #pragma once
 
+#include <Common/MsgQueue.h>
+
 #include <iostream>
 #include <algorithm>
 #include <thread>
 #include <atomic>
-
-#include <Common/MsgQueue.h>
 
 namespace Common {
 
@@ -18,38 +18,34 @@ public:
 public:
     explicit ThreadPool(size_t aThreadsNumber);
     ThreadPool(const ThreadPool& ) = delete;
-    virtual ~ThreadPool()
-    {
+    virtual ~ThreadPool() {
         stop();
     }
 
-    void delegate(const Work& aWork)
-    {
-        iWorkQueue.enqueue(aWork);
+    void delegate(const Work& aWork) {
+        mWorkQueue.enqueue(aWork);
     }
 
 private:
-    void stop()
-    {
-        iStop = true;
-        iWorkQueue.release();
-        std::for_each(iPool.begin(), iPool.end(), [](auto& lIt){lIt.join();});
+    void stop() {
+        mStop = true;
+        mWorkQueue.release();
+        std::for_each(mPool.begin(), mPool.end(), [](auto& lIt) { lIt.join(); });
     }
 
 private:
-    const std::function<void(void)> iThreadBody = [this](){
-        while (!iStop)
-        {
-            auto lWork = this->iWorkQueue.dequeue();
-            if (this->iWorkQueue.isReleased())
+    const std::function<void(void)> mThreadBody = [this]() {
+        while (!mStop) {
+            auto lWork = this->mWorkQueue.dequeue();
+            if (this->mWorkQueue.isReleased())
                 break;
             lWork();
         }
     };
 
-    std::vector<std::thread> iPool;
-    MsgQueue<Work> iWorkQueue;
-    std::atomic<bool> iStop;
+    std::vector<std::thread> mPool;
+    MsgQueue<Work> mWorkQueue;
+    std::atomic<bool> mStop;
 };
 
 }

@@ -1,8 +1,8 @@
 #include <Common/ThreadPool.h>
 
-Common::ThreadPool::ThreadPool(size_t aThreadsNumber) : iStop(false)
+Common::ThreadPool::ThreadPool(size_t aThreadsNumber) : mStop(false)
 {
-    iPool.resize(aThreadsNumber);
-    std::generate(iPool.begin(), iPool.end(),
-        [this]() -> auto { return std::thread(this->iThreadBody);});
+    mPool.resize(aThreadsNumber);
+    std::generate(mPool.begin(), mPool.end(),
+        [this]() -> auto { return std::thread(this->mThreadBody);});
 }
